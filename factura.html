@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generación de Factura</title>
+    <link rel="stylesheet" href="css/factura.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        form, .facturas-list {
+            margin-top: 20px;
+        }
+        label {
+            font-weight: bold;
+        }
+        input {
+            margin-bottom: 10px;
+            padding: 5px;
+            width: 300px;
+        }
+        button {
+            padding: 8px 16px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        table {
+            border-collapse: collapse;
+            margin-top: 20px;
+            width: 90%;
+        }
+        th, td {
+            border: 1px solid #666;
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <a class="btn" href="detalle-factura.html">Atrás</a>
+    <h1>Generación de Factura</h1>
+
+    <form id="formFactura">
+        <label for="idfactura">ID Factura:</label><br/>
+        <input type="text" id="idfactura" name="idfactura" required><br/>
+
+        <label for="fechafacturacion">Fecha Facturación:</label><br/>
+        <input type="date" id="fechafacturacion" name="fechafacturacion" required><br/>
+
+        <label for="total">Total:</label><br/>
+        <input type="number" id="total" name="total" required><br/>
+
+        <label for="idcliente">ID Cliente:</label><br/>
+        <input type="text" id="idcliente" name="idcliente" required><br/>
+
+        <label for="detalle">Detalle:</label><br/>
+        <input type="text" id="detalle" name="detalle" required><br/>
+
+        <label for="fechaentrega">Fecha Entrega:</label><br/>
+        <input type="date" id="fechaentrega" name="fechaentrega" required><br/><br/>
+
+        <button type="submit">Guardar</button>
+        <button type="button" onclick="window.print()">Imprimir</button>
+    </form>
+
+    <div class="facturas-list">
+        <h2>Facturas Registradas</h2>
+        <table id="tablaFacturas">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Fecha Facturación</th>
+                    <th>Total</th>
+                    <th>ID Cliente</th>
+                    <th>Detalle</th>
+                    <th>Fecha Entrega</th>
+                </tr>
+            </thead>
+            <tbody id="contenidoTabla">
+                <!-- Datos cargados desde Firestore -->
+            </tbody>
+        </table>
+    </div>
+
+    <script type="module">
+        import { db } from './js/firebase-config.js';
+        import { doc, setDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+        const form = document.getElementById("formFactura");
+        const tabla = document.getElementById("contenidoTabla");
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const idfactura = document.getElementById("idfactura").value.trim();
+            const fechafacturacion = document.getElementById("fechafacturacion").value;
+            const total = document.getElementById("total").value.trim();
+            const idcliente = document.getElementById("idcliente").value.trim();
+            const detalle = document.getElementById("detalle").value.trim();
+            const fechaentrega = document.getElementById("fechaentrega").value;
+
+            try {
+                await setDoc(doc(db, "facturas", idfactura), {
+                    fechafacturacion,
+                    total,
+                    idcliente,
+                    detalle,
+                    fechaentrega
+                });
+
+                alert("Factura guardada exitosamente.");
+                form.reset();
+                cargarFacturas();
+            } catch (error) {
+                console.error("Error al guardar la factura:", error);
+                alert("Error al guardar.");
+            }
+        });
+
+        async function cargarFacturas() {
+            tabla.innerHTML = ""; // Limpia la tabla
+
+            const querySnapshot = await getDocs(collection(db, "facturas"));
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                const fila = `
+                    <tr>
+                        <td>${doc.id}</td>
+                        <td>${data.fechafacturacion}</td>
+                        <td>${data.total}</td>
+                        <td>${data.idcliente}</td>
+                        <td>${data.detalle}</td>
+                        <td>${data.fechaentrega}</td>
+                    </tr>
+                `;
+                tabla.innerHTML += fila;
+            });
+        }
+
+        // Cargar al iniciar
+        cargarFacturas();
+    </script>
+</body>
+</html>

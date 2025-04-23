@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Registro</title>
+  <link rel="stylesheet" href="./css/style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Registro de usuario</h1>
+
+    <form id="registroForm">
+      <label for="email">Email:</label>
+      <input type="email" id="email" required />
+
+      <label for="password">Contraseña:</label>
+      <input type="password" id="password" required />
+
+      <button type="submit" class="btn">Registrarse</button>
+    </form>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBUlHiaEpxH5D3lgI0c3shbEBP53gdp970",
+      authDomain: "modisteria-71f30.firebaseapp.com",
+      projectId: "modisteria-71f30",
+      storageBucket: "modisteria-71f30.firebasestorage.app",
+      messagingSenderId: "813272222816",
+      appId: "1:813272222816:web:62bd337834ced61a1d0705"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const form = document.getElementById('registroForm');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        alert("Usuario registrado con éxito ✅");
+
+        // Redirige al menú o página de inicio
+        window.location.href = "./index.html";
+      } catch (error) {
+        console.error("Error al registrar:", error);
+        alert("Error al registrar: " + error.message);
+      }
+    });
+  </script>
+</body>
+</html>

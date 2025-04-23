@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de Factura</title>
+    <link rel="stylesheet" href="css/factura.css">
+</head>
+<body>
+    <a class="btn" href="modistas.html">Atrás</a>
+    <a class="btn" href="menu.html">Menú inicio</a> 
+    
+    <h1>Detalle de Factura</h1> <br/>
+
+    <form id="formDetalle">
+        <label for="iddetalle">ID Detalle Factura:</label> <br/>
+        <input type="text" id="iddetalle" name="iddetalle" required> <br/>
+
+        <label for="cantidad">Cantidad:</label> <br/>
+        <input type="number" id="cantidad" name="cantidad" required> <br/>
+
+        <label for="idfactura">ID Factura:</label> <br/>
+        <input type="text" id="idfactura" name="idfactura" required> <br/>
+
+        <label for="idprendas">ID Prendas:</label> <br/>
+        <input type="text" id="idprendas" name="idprendas" required> <br/>
+
+        <button type="submit">Guardar</button>
+        <button type="button" onclick="formDetalle.reset()">Cancelar</button>
+        <a class="btn" href="factura.html">Continuar</a>
+    </form>
+
+    <hr>
+
+    <h2>Lista de Detalles</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID Detalle</th>
+                <th>Cantidad</th>
+                <th>ID Factura</th>
+                <th>ID Prendas</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="tablaDetalleFactura"></tbody>
+    </table>
+
+    <script type="module">
+        import { db } from './js/firebase-config.js';
+        import {
+            doc,
+            setDoc,
+            getDocs,
+            collection,
+            deleteDoc,
+            getDoc
+        } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+        const form = document.getElementById("formDetalle");
+        const tabla = document.getElementById("tablaDetalleFactura");
+
+        let editandoId = null;
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const iddetalle = document.getElementById("iddetalle").value.trim();
+            const cantidad = document.getElementById("cantidad").value.trim();
+            const idfactura = document.getElementById("idfactura").value.trim();
+            const idprendas = document.getElementById("idprendas").value.trim();
+
+            try {
+                await setDoc(doc(db, "detallefactura", editandoId || iddetalle), {
+                    cantidad: parseInt(cantidad),
+                    idfactura,
+                    idprendas
+                });
+
+                alert(editandoId ? "Detalle actualizado" : "Detalle guardado");
+                form.reset();
+                editandoId = null;
+                cargarDetalleFactura();
+            } catch (error) {
+                console.error("Error al guardar:", error);
+                alert("Error al guardar detalle");
+            }
+        });
+
+        async function cargarDetalleFactura() {
+            tabla.innerHTML = '';
+            const querySnapshot = await getDocs(collection(db, "detallefactura"));
+            querySnapshot.forEach((docSnap) => {
+                const data = docSnap.data();
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${docSnap.id}</td>
+                    <td>${data.cantidad}</td>
+                    <td>${data.idfactura}</td>
+                    <td>${data.idprendas}</td>
+                    <td>
+                        <button onclick="editarDetalle('${docSnap.id}')">Editar</button>
+                        <button onclick="eliminarDetalle('${docSnap.id}')">Eliminar</button>
+                    </td>
+                `;
+                tabla.appendChild(tr);
+            });
+        }
+
+        window.eliminarDetalle = async (id) => {
+            if (confirm("¿Deseas eliminar este detalle?")) {
+                await deleteDoc(doc(db, "detallefactura", id));
+                alert("Detalle eliminado");
+                cargarDetalleFactura();
+            }
+        };
+
+        window.editarDetalle = async (id) => {
+            const docRef = doc(db, "detallefactura", id);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                document.getElementById("iddetalle").value = id;
+                document.getElementById("cantidad").value = data.cantidad;
+                document.getElementById("idfactura").value = data.idfactura;
+                document.getElementById("idprendas").value = data.idprendas;
+
+                editandoId = id;
+            } else {
+                alert("No se encontró el detalle");
+            }
+        };
+
+        cargarDetalleFactura();
+    </script>
+</body>
+</html>

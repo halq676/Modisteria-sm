@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HTML Confección</title>
+  <link rel="stylesheet" href="./css/style.css" />
+</head>
+
+<body>
+  <div class="container">
+    <h1>Bienvenido(a)</h1>
+    <p>Ya estás autenticado(a).</p>
+    <h1>Modistería Schumacher</h1>
+
+    <form id="loginForm">
+      <label for="email">Email:</label>
+      <input type="text" id="email" name="email" required />
+
+      <label for="contraseña">Contraseña:</label>
+      <input type="password" id="contraseña" name="contraseña" required />
+
+      <button type="submit" class="btn">Iniciar sesión</button>
+    </form>
+
+    <a class="btn" href="./Registro.html">¿Registrarse?</a><br />
+    <a class="btn" href="./Registro.html">¿Olvidó su contraseña?</a>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBUlHiaEpxH5D3lgI0c3shbEBP53gdp970",
+      authDomain: "modisteria-71f30.firebaseapp.com",
+      projectId: "modisteria-71f30",
+      storageBucket: "modisteria-71f30.firebasestorage.app",
+      messagingSenderId: "813272222816",
+      appId: "1:813272222816:web:62bd337834ced61a1d0705"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const form = document.getElementById('loginForm');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById('email').value;
+      const contraseña = document.getElementById('contraseña').value;
+
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, contraseña);
+        const user = userCredential.user;
+
+        console.log('Usuario autenticado con éxito:', user);
+
+        await addDoc(collection(db, "usuarios"), {
+          email: email,
+          uid: user.uid,
+          fecha: new Date()
+        });
+
+        alert("¡Inicio de sesión exitoso!");
+        window.location.href = "./menu.html";
+
+      } catch (error) {
+        console.error("Error al iniciar sesión: ", error);
+        alert("Error al iniciar sesión. Verifica tus credenciales.");
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro de Clientes</title>
+  <link rel="stylesheet" href="./css/clientes.css">
+</head>
+<body>
+  <a class="btn" href="./menu.html">Atrás</a>
+  <h1>Registro de clientes</h1>
+
+  <form id="formCliente">
+    <input type="hidden" id="editandoId"> <!-- Para editar -->
+
+    <label for="idcliente">ID Cliente:</label><br/>
+    <input type="text" id="idcliente" required><br/>
+
+    <label for="cedula">Cédula:</label><br/>
+    <input type="text" id="cedula" required><br/>
+
+    <label for="nombres">Nombres:</label><br/>
+    <input type="text" id="nombres" required><br/>
+
+    <label for="apellidos">Apellidos:</label><br/>
+    <input type="text" id="apellidos" required><br/>
+
+    <label for="celular">Celular:</label><br/>
+    <input type="text" id="celular" required><br/>
+
+    <button type="submit">Guardar</button>
+    <button type="button" onclick="limpiarFormulario()">Cancelar</button>
+    <a class="btn" href="./prendas.html">Continuar</a>
+  </form>
+
+  <hr>
+  <h2>Lista de clientes</h2>
+  <table border="1">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Cédula</th>
+        <th>Nombres</th>
+        <th>Apellidos</th>
+        <th>Celular</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="tablaClientes"></tbody>
+  </table>
+
+  <!-- Conexión a Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { getFirestore, collection, doc, setDoc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBUlHiaEpxH5D3lgI0c3shbEBP53gdp970",
+      authDomain: "modisteria-71f30.firebaseapp.com",
+      projectId: "modisteria-71f30",
+      storageBucket: "modisteria-71f30.firebasestorage.app",
+      messagingSenderId: "813272222816",
+      appId: "1:813272222816:web:62bd337834ced61a1d0705"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const form = document.getElementById('formCliente');
+    const tabla = document.getElementById('tablaClientes');
+
+    async function cargarClientes() {
+      tabla.innerHTML = '';
+      const querySnapshot = await getDocs(collection(db, "clientes"));
+      querySnapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${docSnap.id}</td>
+          <td>${data.cedula}</td>
+          <td>${data.nombres}</td>
+          <td>${data.apellidos}</td>
+          <td>${data.celular}</td>
+          <td>
+            <button onclick="editarCliente('${docSnap.id}', '${data.cedula}', '${data.nombres}', '${data.apellidos}', '${data.celular}')">Editar</button>
+            <button onclick="eliminarCliente('${docSnap.id}')">Eliminar</button>
+          </td>
+        `;
+        tabla.appendChild(tr);
+      });
+    }
+
+    window.editarCliente = (id, cedula, nombres, apellidos, celular) => {
+      document.getElementById('editandoId').value = id;
+      document.getElementById('idcliente').value = id;
+      document.getElementById('cedula').value = cedula;
+      document.getElementById('nombres').value = nombres;
+      document.getElementById('apellidos').value = apellidos;
+      document.getElementById('celular').value = celular;
+    };
+
+    window.eliminarCliente = async (id) => {
+      if (confirm("¿Seguro que quieres eliminar este cliente?")) {
+        await deleteDoc(doc(db, "clientes", id));
+        alert("Cliente eliminado");
+        cargarClientes();
+      }
+    };
+
+    window.limpiarFormulario = () => {
+      form.reset();
+      document.getElementById('editandoId').value = '';
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const id = document.getElementById('idcliente').value.trim();
+      const cedula = document.getElementById('cedula').value.trim();
+      const nombres = document.getElementById('nombres').value.trim();
+      const apellidos = document.getElementById('apellidos').value.trim();
+      const celular = document.getElementById('celular').value.trim();
+
+      try {
+        await setDoc(doc(db, "clientes", id), {
+          cedula, nombres, apellidos, celular
+        });
+        alert('Cliente guardado/actualizado');
+        limpiarFormulario();
+        cargarClientes();
+      } catch (err) {
+        console.error("Error al guardar:", err);
+        alert("Error al guardar cliente: " + err.message);
+      }
+    });
+
+    cargarClientes();
+  </script>
+</body>
+</html>

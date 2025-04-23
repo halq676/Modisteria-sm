@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Asignación de Modistas</title>
+  <link rel="stylesheet" href="css/modista.css" />
+</head>
+<body>
+  <a class="btn" href="prendas.html">Atrás</a> <br/>
+  <h1>Asignación de Modistas</h1> <br/>
+
+  <form id="formModista">
+    <input type="hidden" id="editandoId">
+    
+    <label for="idmodista">ID Modista:</label> <br/>
+    <input type="text" id="idmodista" required> <br/>
+
+    <label for="nombres">Nombres:</label> <br/>
+    <input type="text" id="nombres" required> <br/>
+
+    <label for="apellidos">Apellidos:</label> <br/>
+    <input type="text" id="apellidos" required> <br/>
+
+    <label for="celular">Celular:</label> <br/>
+    <input type="text" id="celular" required pattern="[0-9]{10}" title="10 dígitos"> <br/>
+
+    <button type="submit">Guardar</button>
+    <button type="button" onclick="limpiarFormulario()">Cancelar</button>
+    <a class="btn" href="detalle-factura.html">Continuar</a>
+  </form>
+
+  <hr/>
+  <h2>Lista de Modistas</h2>
+  <table border="1">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nombres</th>
+        <th>Apellidos</th>
+        <th>Celular</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="tablaModistas"></tbody>
+  </table>
+
+  <script type="module">
+    import { db } from './js/firebase-config.js';
+    import {
+      collection,
+      doc,
+      setDoc,
+      getDocs,
+      deleteDoc
+    } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+    const form = document.getElementById("formModista");
+    const tabla = document.getElementById("tablaModistas");
+
+    async function cargarModistas() {
+      tabla.innerHTML = "";
+      const querySnapshot = await getDocs(collection(db, "modistas"));
+      querySnapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${docSnap.id}</td>
+          <td>${data.nombres}</td>
+          <td>${data.apellidos}</td>
+          <td>${data.celular}</td>
+          <td>
+            <button onclick="editarModista('${docSnap.id}', '${data.nombres}', '${data.apellidos}', '${data.celular}')">Editar</button>
+            <button onclick="eliminarModista('${docSnap.id}')">Eliminar</button>
+          </td>
+        `;
+        tabla.appendChild(tr);
+      });
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const idmodista = document.getElementById("idmodista").value.trim();
+      const nombres = document.getElementById("nombres").value.trim();
+      const apellidos = document.getElementById("apellidos").value.trim();
+      const celular = document.getElementById("celular").value.trim();
+
+      try {
+        await setDoc(doc(db, "modistas", idmodista), {
+          nombres,
+          apellidos,
+          celular
+        });
+        alert("Modista guardada correctamente");
+        limpiarFormulario();
+        cargarModistas();
+      } catch (error) {
+        console.error("Error al guardar modista:", error);
+        alert("Ocurrió un error al guardar");
+      }
+    });
+
+    window.editarModista = (id, nombres, apellidos, celular) => {
+      document.getElementById("editandoId").value = id;
+      document.getElementById("idmodista").value = id;
+      document.getElementById("nombres").value = nombres;
+      document.getElementById("apellidos").value = apellidos;
+      document.getElementById("celular").value = celular;
+    };
+
+    window.eliminarModista = async (id) => {
+      if (confirm("¿Seguro que quieres eliminar esta modista?")) {
+        await deleteDoc(doc(db, "modistas", id));
+        alert("Modista eliminada");
+        cargarModistas();
+      }
+    };
+
+    window.limpiarFormulario = () => {
+      form.reset();
+      document.getElementById("editandoId").value = "";
+    };
+
+    cargarModistas();
+  </script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro de Prendas</title>
+  <link rel="stylesheet" href="css/prendas.css">
+</head>
+<body>
+  <a class="btn" href="clientes.html">Atrás</a> <br/>
+  <h1>Registro de Prendas</h1> <br/>
+
+  <form id="formPrenda">
+    <input type="hidden" id="editandoId"> 
+    <label for="idprendas">ID Prendas:</label> <br/>
+    <input type="text" id="idprendas" required> <br/>
+
+    <label for="modalidad">Modalidad:</label> <br/>
+    <input type="text" id="modalidad" required> <br/>
+
+    <label for="medidas">Medidas:</label> <br/>
+    <input type="text" id="medidas" required> <br/>
+
+    <label for="precioUnitario">Precio Unitario:</label> <br/>
+    <input type="number" id="precioUnitario" required> <br/>
+
+    <label for="idmodista">ID Modista:</label> <br/>
+    <input type="text" id="idmodista" required> <br/>
+
+    <label for="tipoPrenda">Tipo de Prenda:</label> <br/>
+    <input type="text" id="tipoPrenda" required> <br/>
+
+    <label for="idclientes">ID Cliente:</label> <br/>
+    <input type="text" id="idclientes" required> <br/>
+
+    <button type="submit">Guardar</button>
+    <button type="button" onclick="limpiarFormulario()">Cancelar</button>
+    <a class="btn" href="modistas.html">Continuar</a>
+  </form>
+
+  <hr>
+  <h2>Lista de Prendas</h2>
+  <table border="1">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Modalidad</th>
+        <th>Medidas</th>
+        <th>Precio Unitario</th>
+        <th>ID Modista</th>
+        <th>Tipo Prenda</th>
+        <th>ID Cliente</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="tablaPrendas"></tbody>
+  </table>
+
+  <script type="module">
+    import { db, auth } from './js/firebase-config.js';
+    import { collection, doc, setDoc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+
+    const form = document.getElementById('formPrenda');
+    const tabla = document.getElementById('tablaPrendas');
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = "index.html";
+      }
+    });
+
+    async function cargarPrendas() {
+      tabla.innerHTML = '';
+      const querySnapshot = await getDocs(collection(db, "prendas"));
+      querySnapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${docSnap.id}</td>
+          <td>${data.modalidad}</td>
+          <td>${data.medidas}</td>
+          <td>${data.precio_unitario}</td>
+          <td>${data.idmodista}</td>
+          <td>${data.tipo_prenda}</td>
+          <td>${data.idclientes}</td>
+          <td>
+            <button onclick="editarPrenda('${docSnap.id}', '${data.modalidad}', '${data.medidas}', '${data.precio_unitario}', '${data.idmodista}', '${data.tipo_prenda}', '${data.idclientes}')">Editar</button>
+            <button onclick="eliminarPrenda('${docSnap.id}')">Eliminar</button>
+          </td>
+        `;
+        tabla.appendChild(tr);
+      });
+    }
+
+    window.editarPrenda = (id, modalidad, medidas, precio_unitario, idmodista, tipo_prenda, idclientes) => {
+      document.getElementById('editandoId').value = id;
+      document.getElementById('idprendas').value = id;
+      document.getElementById('modalidad').value = modalidad;
+      document.getElementById('medidas').value = medidas;
+      document.getElementById('precioUnitario').value = precio_unitario;
+      document.getElementById('idmodista').value = idmodista;
+      document.getElementById('tipoPrenda').value = tipo_prenda;
+      document.getElementById('idclientes').value = idclientes;
+    };
+
+    window.eliminarPrenda = async (id) => {
+      if (confirm("¿Seguro que quieres eliminar esta prenda?")) {
+        await deleteDoc(doc(db, "prendas", id));
+        alert("Prenda eliminada");
+        cargarPrendas();
+      }
+    };
+
+    window.limpiarFormulario = () => {
+      form.reset();
+      document.getElementById('editandoId').value = '';
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const id = document.getElementById('idprendas').value.trim();
+      const modalidad = document.getElementById('modalidad').value.trim();
+      const medidas = document.getElementById('medidas').value.trim();
+      const precioUnitario = document.getElementById('precioUnitario').value.trim();
+      const idmodista = document.getElementById('idmodista').value.trim();
+      const tipoPrenda = document.getElementById('tipoPrenda').value.trim();
+      const idclientes = document.getElementById('idclientes').value.trim();
+
+      try {
+        await setDoc(doc(db, "prendas", id), {
+          modalidad,
+          medidas,
+          precio_unitario: parseFloat(precioUnitario),
+          idmodista,
+          tipo_prenda: tipoPrenda,
+          idclientes
+        });
+        alert('Prenda guardada/actualizada');
+        limpiarFormulario();
+        cargarPrendas();
+      } catch (err) {
+        console.error("Error al guardar:", err);
+        alert("Error al guardar prenda: " + err.message);
+      }
+    });
+
+    cargarPrendas();
+  </script>
+</body>
+</html>
