@@ -40,5 +40,5 @@ Clona repositorio des
 
 de GitHub
 
-git clone https://github.com/halq676/Modisteria-digital.git
+https://github.com/halq676/Modisteria-sm.git
 
