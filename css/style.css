@@ -64,3 +64,13 @@ button:hover {
 .forgot-password:hover {
     text-decoration: underline;
 }
+.btn {
+    color: #0e0d0d; /* Color del texto normal */
+    text-decoration: none;
+  }
+  
+  .btn:hover {
+    color: #ffcc00; /* Color al pasar el mouse */
+    text-decoration: underline;
+  }
+  
