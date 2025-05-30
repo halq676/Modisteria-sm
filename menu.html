@@ -1,44 +1,53 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Menú Modistería</title>
-  <link rel="stylesheet" href="./css/menu.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Control - Modistería Schumacher</title>
+    <link rel="stylesheet" href="./css/menu.css">
 </head>
-<body> 
-  <button id="logoutBtn" class="btn">Cerrar sesión</button>
-  <a class="btn" href="index.html">Atrás</a><br/> 
-  <h1>Módulos</h1>
+<body>
+     <button id="logoutBtn" class="btn">Cerrar sesión</button>
+    <div class="container">
 
-  <a class="btn" href="clientes.html">Clientes</a><br/>
-  <a class="btn" href="prendas.html">Prendas</a><br/>
-  <a class="btn" href="modistas.html">Modista</a><br/>
-  <a class="btn" href="detalle-factura.html">Detalle Factura</a><br/>
-  <a class="btn" href="factura.html">Factura</a> 
+        <main>
+            <h1>Bienvenido(a) a Modistería Schumacher</h1>
+            <nav aria-label="Menú principal de la aplicación">
+                <h2>Módulos de Gestión</h2>
+                <ul>
+                    <li><a class="btn" href="clientes.html">Gestión de Clientes</a></li>
+                    <li><a class="btn" href="prendas.html">Registro y Asignación de Prendas</a></li>
+                    <li><a class="btn" href="factura.html">Generar Nueva Factura</a></li>
+                </ul>
+            </nav>
+        </main>
+    </div>
 
-  <script type="module">
-    import { auth } from './js/firebase-config.js';
-    import { signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+    <script type="module">
+        // Asume que firebase-config.js exporta 'auth'
+        import { auth } from './js/firebase-config.js';
+        import { signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 
-    // Verifica si el usuario está autenticado
-    onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        window.location.href = "index.html";
-      } else {
-        console.log("Usuario autenticado:", user.email);
-      }
-    });
+        // Verifica si el usuario está autenticado
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = "index.html"; // Redirige a la página de login si no hay usuario
+            } else {
+                console.log("Usuario autenticado:", user.email);
+            }
+        });
 
-    document.getElementById('logoutBtn').addEventListener('click', async () => {
-      try {
-        await signOut(auth);
-        alert("Has cerrado sesión exitosamente.");
-        window.location.href = "index.html";
-      } catch (error) {
-        console.error("Error al cerrar sesión:", error);
-      }
-    });
-  </script>
+        // Event listener para el botón de cerrar sesión
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+                alert("Has cerrado sesión exitosamente."); // Considera un feedback ARIA live como en index.html
+                window.location.href = "index.html";
+            } catch (error) {
+                console.error("Error al cerrar sesión:", error);
+                alert("Error al cerrar sesión. Inténtalo de nuevo.");
+            }
+        });
+    </script>
 </body>
 </html>

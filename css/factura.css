@@ -1,3 +1,212 @@
 body{
-    background-color: #b0cdb7;
+        /* Estilos específicos para esta página o sobrescrituras */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e0f2f1; /* Un verde claro para el fondo */
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background-color: #e0f2f1;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #00796b; /* Un verde más oscuro */
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 2em;
+        }
+
+        .link-back {
+            display: block;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #00796b;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .link-back:hover {
+            text-decoration: underline;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #b2dfdb;
+            border-radius: 5px;
+            background-color: #f0fdfc;
+        }
+
+        .form-section h2 {
+            color: #00796b;
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #004d40;
+        }
+
+        select, input[type="button"] {
+            width: calc(100% - 22px); /* Ancho del select y botón ajustado con padding */
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #80cbc4;
+            border-radius: 4px;
+            font-size: 1em;
+            box-sizing: border-box; /* Incluye padding y border en el ancho total */
+        }
+
+        input[type="button"] {
+            width: auto; /* Para que el botón no ocupe todo el ancho si no es necesario */
+            display: inline-block;
+            background-color: #00796b;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            min-width: 150px;
+            margin-right: 10px; /* Espacio entre botones */
+        }
+
+        input[type="button"]:hover {
+            background-color: #004d40;
+        }
+
+        /* Feedback messages */
+        .feedback {
+            padding: 10px;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .feedback.success {
+            background-color: #d4edda;
+            color: #155724;
+            border-color: #c3e6cb;
+        }
+        .feedback.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-color: #f5c6cb;
+        }
+        .feedback.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border-color: #bee5eb;
+        }
+
+        /* Factura Preview Section */
+        #facturaPreview {
+            display: none; /* Oculto por defecto, se muestra con JS */
+            margin-top: 30px;
+            padding: 25px;
+            border: 1px solid #00796b;
+            border-radius: 8px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #invoice-content {
+            padding: 15px;
+        }
+
+        .invoice-header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #00796b;
+            padding-bottom: 10px;
+        }
+
+        .invoice-header h3 {
+            color: #00796b;
+            margin: 0;
+            font-size: 1.8em;
+        }
+
+        .invoice-details, .item-details {
+            margin-bottom: 20px;
+        }
+
+        .invoice-details table, .item-details table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .invoice-details th, .invoice-details td,
+        .item-details th, .item-details td {
+            border: 1px solid #e0f2f1;
+            padding: 10px;
+            text-align: left;
+            font-size: 0.95em;
+        }
+
+        .item-details th {
+            background-color: #e0f2f1;
+            color: #004d40;
+        }
+
+        .total-section {
+            text-align: right;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 2px solid #00796b;
+        }
+
+        .total-section p {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #004d40;
+        }
+
+        .total-section span {
+            color: #d32f2f; /* Rojo para el total */
+            font-size: 1.3em;
+        }
+
+        .invoice-footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.9em;
+            color: #666;
+            border-top: 1px dashed #b2dfdb;
+            padding-top: 15px;
+        }
+
+        /* Estilos para los botones de la factura */
+        .factura-actions {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .factura-actions button {
+            margin: 0 10px;
+        }
+}
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #00796b; /* mismo verde que usas */
+    color: white;
+    text-decoration: none;
+    border: none;
+    border-radius: 4px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.btn:hover {
+    background-color: #004d40; /* verde más oscuro al pasar el mouse */
 }

@@ -3,144 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generación de Factura</title>
+    <title>Generar Factura - Modistería</title>
     <link rel="stylesheet" href="css/factura.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
-        form, .facturas-list {
-            margin-top: 20px;
-        }
-        label {
-            font-weight: bold;
-        }
-        input {
-            margin-bottom: 10px;
-            padding: 5px;
-            width: 300px;
-        }
-        button {
-            padding: 8px 16px;
-            margin-right: 10px;
-            cursor: pointer;
-        }
-        table {
-            border-collapse: collapse;
-            margin-top: 20px;
-            width: 90%;
-        }
-        th, td {
-            border: 1px solid #666;
-            padding: 8px;
-            text-align: left;
-        }
-    </style>
+    
 </head>
 <body>
-    <a class="btn" href="detalle-factura.html">Atrás</a>
-    <h1>Generación de Factura</h1>
+    <div class="container">
+        <h1>Generar Nueva Factura</h1>
+        <a href="menu.html" class="link-back">Volver al Menú</a> 
 
-    <form id="formFactura">
-        <label for="idfactura">ID Factura:</label><br/>
-        <input type="text" id="idfactura" name="idfactura" required><br/>
+        <div id="prendaFacturaFeedback" class="feedback"></div>
 
-        <label for="fechafacturacion">Fecha Facturación:</label><br/>
-        <input type="date" id="fechafacturacion" name="fechafacturacion" required><br/>
+        <div class="form-section">
+            <h2>Seleccionar Prenda para Facturar</h2>
+            <div>
+                <label for="prendaFacturar">Prenda:</label>
+                <select id="prendaFacturar">
+                    <option value="">Cargando prendas...</option>
+                </select>
+            </div>
+            <input type="button" id="generarFacturaBtn" value="Generar Vista Previa">
+        </div>
 
-        <label for="total">Total:</label><br/>
-        <input type="number" id="total" name="total" required><br/>
+        <section id="facturaPreview">
+            <div id="invoice-content">
+                <div class="invoice-header">
+                    <h3>Factura de Modistería</h3>
+                    <p>Fecha: <span id="facturaFecha"></span> | Factura N°: <span id="facturaNumero"></span></p>
+                </div>
 
-        <label for="idcliente">ID Cliente:</label><br/>
-        <input type="text" id="idcliente" name="idcliente" required><br/>
+                <div class="invoice-details">
+                    <h4>Datos del Cliente</h4>
+                    <table>
+                        <tr>
+                            <th>Nombre Completo:</th>
+                            <td><span id="clienteNombreFactura"></span></td>
+                        </tr>
+                        <tr>
+                            <th>Teléfono:</th>
+                            <td><span id="clienteTelefonoFactura"></span></td>
+                        </tr>
+                        <tr>
+                            <th>Email:</th>
+                            <td><span id="clienteEmailFactura"></span></td>
+                        </tr>
+                        <tr>
+                            <th>Dirección:</th>
+                            <td><span id="clienteDireccionFactura"></span></td>
+                        </tr>
+                    </table>
+                </div>
 
-        <label for="detalle">Detalle:</label><br/>
-        <input type="text" id="detalle" name="detalle" required><br/>
+                <div class="item-details">
+                    <h4>Detalles de la Prenda</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tipo de Prenda</th>
+                                <th>Descripción</th>
+                                <th>Cantidad</th>
+                                <th>Costo Unitario</th>
+                                <th>Total Prenda</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span id="tipoPrendaFactura"></span></td>
+                                <td><span id="descripcionPrendaFactura"></span></td>
+                                <td><span id="cantidadPrendaFactura"></span></td>
+                                <td><span id="costoUnitarioFactura"></span></td>
+                                <td><span id="totalPrendaFactura"></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-        <label for="fechaentrega">Fecha Entrega:</label><br/>
-        <input type="date" id="fechaentrega" name="fechaentrega" required><br/><br/>
+                <div class="additional-info">
+                    <p><strong>Modista Asignada:</strong> <span id="modistaAsignadaFactura"></span></p>
+                    <p><strong>Estado de la Prenda:</strong> <span id="estadoPrendaFactura"></span></p>
+                </div>
 
-        <button type="submit">Guardar</button>
-        <button type="button" onclick="window.print()">Imprimir</button>
-    </form>
+                <div class="total-section">
+                    <p>Gran Total: <span id="granTotalFactura"></span></p>
+                </div>
 
-    <div class="facturas-list">
-        <h2>Facturas Registradas</h2>
-        <table id="tablaFacturas">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Fecha Facturación</th>
-                    <th>Total</th>
-                    <th>ID Cliente</th>
-                    <th>Detalle</th>
-                    <th>Fecha Entrega</th>
-                </tr>
-            </thead>
-            <tbody id="contenidoTabla">
-                <!-- Datos cargados desde Firestore -->
-            </tbody>
-        </table>
+                <div class="invoice-footer">
+                    <p>¡Gracias por su preferencia!</p>
+                    <p>Modistería [Modisteria Shumacher]</p>
+                </div>
+            </div>
+
+            <div class="factura-actions">
+                <button id="guardarFacturaBtn" class="btn">Guardar Factura</button>
+                <button id="imprimirFacturaBtn" class="btn">Imprimir Factura</button>
+                <a class="btn" href="menu.html">Volver al Menú</a>
+            </div>
+        </section>
     </div>
 
-    <script type="module">
-        import { db } from './js/firebase-config.js';
-        import { doc, setDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+    <script type="module" src="js/firebase-config.js"></script>
+    <script type="module" src="js/factura.js"></script>
 
-        const form = document.getElementById("formFactura");
-        const tabla = document.getElementById("contenidoTabla");
+    <script>
+document.getElementById('imprimirFacturaBtn').addEventListener('click', () => {
+    const printContents = document.getElementById('invoice-content').innerHTML;
+    const originalContents = document.body.innerHTML;
 
-        form.addEventListener("submit", async (e) => {
-            e.preventDefault();
+    document.body.innerHTML = printContents;
+    window.print();
+    document.body.innerHTML = originalContents;
+    location.reload(); // Recarga la página para restaurar los scripts y eventos
+});
+</script>
 
-            const idfactura = document.getElementById("idfactura").value.trim();
-            const fechafacturacion = document.getElementById("fechafacturacion").value;
-            const total = document.getElementById("total").value.trim();
-            const idcliente = document.getElementById("idcliente").value.trim();
-            const detalle = document.getElementById("detalle").value.trim();
-            const fechaentrega = document.getElementById("fechaentrega").value;
-
-            try {
-                await setDoc(doc(db, "facturas", idfactura), {
-                    fechafacturacion,
-                    total,
-                    idcliente,
-                    detalle,
-                    fechaentrega
-                });
-
-                alert("Factura guardada exitosamente.");
-                form.reset();
-                cargarFacturas();
-            } catch (error) {
-                console.error("Error al guardar la factura:", error);
-                alert("Error al guardar.");
-            }
-        });
-
-        async function cargarFacturas() {
-            tabla.innerHTML = ""; // Limpia la tabla
-
-            const querySnapshot = await getDocs(collection(db, "facturas"));
-            querySnapshot.forEach((doc) => {
-                const data = doc.data();
-                const fila = `
-                    <tr>
-                        <td>${doc.id}</td>
-                        <td>${data.fechafacturacion}</td>
-                        <td>${data.total}</td>
-                        <td>${data.idcliente}</td>
-                        <td>${data.detalle}</td>
-                        <td>${data.fechaentrega}</td>
-                    </tr>
-                `;
-                tabla.innerHTML += fila;
-            });
-        }
-
-        // Cargar al iniciar
-        cargarFacturas();
-    </script>
 </body>
 </html>
